@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import math
 
 from .drawing import Camouflage, NoPattern, SolidColor, MultiGradient, ImagePattern
 from .fonts import LANGUAGE_MAP
@@ -14,20 +15,140 @@ from .generate import (
 
 
 def generate_plain_dataset(n_samples, language="english", seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=1.0,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_rotated_dataset(n_samples, language="english", seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=lambda rng: rng.uniform(low=0, high=1, size=2)*math.pi,
+        scale=1.0,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+
+def generate_plain_translated_dataset(n_samples, language="english", seed=None, **kwargs):
+    """Generate default with translation uniformly b/w (-1,1)
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=1.0,
+        translation=lambda rng: rng.uniform(low=-1, high=1, size=2),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+def generate_plain_scaled_dataset(n_samples, language="english", seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=None,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_bold_dataset(n_samples, language="english", seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=True)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=True,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=1.0,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_italic_dataset(n_samples, language="english", seed=None, **kwargs):
     """Generate white on black, centered symbols.
     The only factors of variations are font and char.
     """
     alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
     attr_sampler = basic_attribute_sampler(
         alphabet=alphabet,
-        background=NoPattern(),
-        foreground=SolidColor(
-            (
-                1,
-                1,
-                1,
-            )
-        ),
+        is_slant=True,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=1.0,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_gradient_dataset(n_samples, language="english", seed=None, **kwargs):
+    """Generate white on black, centered symbols.
+    The only factors of variations are font and char.
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
         is_slant=False,
         is_bold=False,
         rotation=0,
@@ -37,6 +158,56 @@ def generate_plain_dataset(n_samples, language="english", seed=None, **kwargs):
         pixel_noise_scale=0.0,
     )
     return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_natural_dataset(n_samples, language="english", seed=None, **kwargs):
+    """Generate white on black, centered symbols.
+    The only factors of variations are font and char.
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        background=lambda rng: ImagePattern(seed=rand_seed(rng)),
+        foreground=lambda rng: ImagePattern(seed=rand_seed(rng)),
+        is_slant=False,
+        is_bold=False,
+        rotation=0,
+        scale=1.0,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+def generate_plain_camouflage_dataset(n_samples, language="english", seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    angle = 0
+    fg = Camouflage(stroke_angle=angle, stroke_width=0.1, stroke_length=0.6, stroke_noise=0)
+    bg = Camouflage(stroke_angle=angle + np.pi / 2, stroke_width=0.1, stroke_length=0.6, stroke_noise=0)
+    scale = 0.7 * np.exp(np.random.randn() * 0.1)
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        is_slant=False,
+        is_bold=False,
+        background=bg, 
+        foreground=fg,
+        rotation=0,
+        scale=scale,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+
+
+
+
+
+
 
 
 def generate_tiny_dataset(n_samples, language="english", seed=None, **kwarg):

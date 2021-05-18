@@ -296,6 +296,12 @@ def generate_and_write_dataset(file_path, attr_sampler, n_samples, preview_shape
 
     write_h5(file_path + ".h5py", ds_generator, n_samples)
 
+def write_generated_dataset(file_path, ds_generator, n_samples, preview_shape=(10, 10)):
+    if preview_shape is not None:
+        n_row, n_col = preview_shape
+        ds_generator = make_preview(ds_generator, file_path + "_preview.png", n_row=n_row, n_col=n_col)
+
+    write_h5(file_path + ".h5py", ds_generator, n_samples)
 
 def make_preview(generator, file_name, n_row=10, n_col=10):
     """Augment a generator to save a preview when
