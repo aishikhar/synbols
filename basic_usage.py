@@ -20,10 +20,10 @@ from synbols.predefined_datasets import *
 
 
 def path(name):
-    path = "gen_datasets"
+    path = "gen_datasets" #FIXME Changed to Temporary Dataset path
     return os.path.join(path, name)
 
-n_samples = 1000
+n_samples = 5000
 seed = 123
 
 
@@ -51,8 +51,8 @@ for language in languages:
     # Italic
     write_generated_dataset(file_path = path(language+'_italic'), ds_generator = generate_plain_italic_dataset(n_samples, language, seed=seed),\
         n_samples=n_samples)   
-    # Solid
-    write_generated_dataset(file_path = path(language+'_solid'), ds_generator = generate_plain_solid_dataset(n_samples, language, seed=seed),\
+    # Gradient
+    write_generated_dataset(file_path = path(language+'_gradient'), ds_generator = generate_plain_gradient_dataset(n_samples, language, seed=seed),\
         n_samples=n_samples)   
     # Natural
     write_generated_dataset(file_path = path(language+'_natural'), ds_generator = generate_plain_natural_dataset(n_samples, language, seed=seed),\
