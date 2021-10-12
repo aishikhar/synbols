@@ -2,7 +2,8 @@ import logging
 import numpy as np
 import math
 
-from .drawing import Camouflage, NoPattern, SolidColor, MultiGradient, ImagePattern
+from .drawing import Camouflage, NoPattern, SolidColor, MultiGradient, ImagePattern, Gradient, Image, Symbol
+
 from .fonts import LANGUAGE_MAP
 from .generate import (
     dataset_generator,
@@ -12,6 +13,68 @@ from .generate import (
     add_occlusion,
     rand_seed,
 )
+
+def generate_i(n_samples, alphabet = None, language="english", font = 'calibri', set = "plain", seed=None, **kwargs):
+    """[summary]
+
+    Args:
+        n_samples ([type]): [description]
+        language (str, optional): [description]. Defaults to "english".
+        seed ([type], optional): [description]. Defaults to None.
+    """
+    if alphabet is None:
+        alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
+    print(alphabet)
+    fg = SolidColor((1, 1, 1))
+    bg = SolidColor((0, 0, 0))
+    rotation = 0
+    translation = (0.0,0.0)
+    if set == 'rotation':
+        rotation = (lambda rng: rng.uniform(low=0, high=1)*math.pi)
+    elif set == 'translation':
+        translation= (lambda rng: tuple(rng.uniform(low=-1, high=1, size=2)))
+    elif set == 'gradient':
+        fg = None
+        bg = None
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        font = font,
+        is_slant=False,
+        is_bold=False,
+        background=bg,
+        foreground=fg,
+        rotation=rotation,
+        scale=0.7,
+        translation=translation,
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
+def generate_plain_dataset_alphabet(n_samples, chars, seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP['english'].get_alphabet(support_bold=False)
+    #print(alphabet.fonts[:10])
+    fg = [SolidColor((1, 1, 1)), ImagePattern(seed=123)]
+
+    bg = [SolidColor((0, 0, 0)), ImagePattern(seed=123)]
+    
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        char=lambda rng: rng.choice(chars),
+        font=lambda rng: rng.choice(alphabet.fonts[50:55]),
+        is_slant=False,
+        is_bold=False,
+        background= lambda rng:rng.choice(bg),
+        foreground= lambda rng:rng.choice(fg),
+        rotation=0,
+        scale=0.7,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
 
 
 def generate_plain_dataset(n_samples, language="english", seed=None, **kwargs):
@@ -27,7 +90,7 @@ def generate_plain_dataset(n_samples, language="english", seed=None, **kwargs):
         background=bg,
         foreground=fg,
         rotation=0,
-        scale=1.0,
+        scale=0.7,
         translation=(0.0, 0.0),
         inverse_color=False,
         pixel_noise_scale=0.0,
@@ -167,7 +230,7 @@ def generate_plain_natural_dataset(n_samples, language="english", seed=None, **k
     alphabet = LANGUAGE_MAP[language].get_alphabet(support_bold=False)
     attr_sampler = basic_attribute_sampler(
         alphabet=alphabet,
-        background=lambda rng: ImagePattern(seed=rand_seed(rng)),
+        background=lambda rng: ImagePattern(seed=rand_seed(rng)), #lambda rng: Gradient(seed=rand_seed(_rng))
         foreground=lambda rng: ImagePattern(seed=rand_seed(rng)),
         is_slant=False,
         is_bold=False,
