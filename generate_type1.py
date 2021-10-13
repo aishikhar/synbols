@@ -30,7 +30,7 @@ seed = 123
 language = 'english'
 domains = ['plain','rotation','translation','gradient']
 fonts = ['Times New Roman','Calibri']
-chars = ['0','1','2']
+chars = ['0','1','2','3','4','5','6','7','8','9']
 #alphabet = Alphabet('custom',fonts = fonts, symbols = symbols)
 #char = 'j'
 #for domain in domains:
@@ -38,7 +38,7 @@ chars = ['0','1','2']
 #write_generated_dataset(file_path = path(domain), ds_generator = generate_i(n_samples, set = domain, seed=seed), n_samples=n_samples)
 #write_generated_dataset(file_path = path(domains[0]), ds_generator = generate_plain_dataset_alphabet(n_samples, alphabet, seed=seed),\
         #n_samples=n_samples)
-write_generated_dataset(file_path = path('custom_20fonts_natural'), ds_generator = generate_plain_dataset_alphabet(n_samples, chars = chars, seed=seed),\
+write_generated_dataset(file_path = path('custom_20fonts_natural_allchars_onlygrad'), ds_generator = generate_plain_dataset_alphabet_onlygrad(n_samples, chars = chars, seed=seed),\
         n_samples=n_samples)
     # Translated
 #write_generated_dataset(file_path = path('plain'), ds_generator = generate_plain_dataset_alphabet(n_samples = n_samples, alphabet=alphabet), n_samples = n_samples)

@@ -51,6 +51,26 @@ def generate_i(n_samples, alphabet = None, language="english", font = 'calibri',
     )
     return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
 
+def generate_plain_dataset_alphabet_onlygrad(n_samples, chars, seed=None, **kwargs):
+    """
+    """
+    alphabet = LANGUAGE_MAP['english'].get_alphabet(support_bold=False)
+    #print(alphabet.fonts[:10])
+    
+    attr_sampler = basic_attribute_sampler(
+        alphabet=alphabet,
+        char=lambda rng: rng.choice(chars),
+        font=lambda rng: rng.choice(alphabet.fonts[50:55]),
+        is_slant=False,
+        is_bold=False,
+        rotation=0,
+        scale=0.7,
+        translation=(0.0, 0.0),
+        inverse_color=False,
+        pixel_noise_scale=0.0,
+    )
+    return dataset_generator(attr_sampler, n_samples, dataset_seed=seed)
+
 def generate_plain_dataset_alphabet(n_samples, chars, seed=None, **kwargs):
     """
     """
